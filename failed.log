@@ -1,0 +1,133 @@
+﻿build	Build debug APK	∩╗┐2026-08-20T23:45:21.4287877Z ##[group]Run gradle :app:assembleDebug --no-daemon
+build	Build debug APK	2026-08-20T23:45:21.4288656Z ^[[36;1mgradle :app:assembleDebug --no-daemon^[[0m
+build	Build debug APK	2026-08-20T23:45:21.4334592Z shell: /usr/bin/bash -e {0}
+build	Build debug APK	2026-08-20T23:45:21.4334878Z env:
+build	Build debug APK	2026-08-20T23:45:21.4335200Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-8/x64
+build	Build debug APK	2026-08-20T23:45:21.4335712Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-8/x64
+build	Build debug APK	2026-08-20T23:45:21.4336140Z   ANDROID_HOME: /usr/local/lib/android/sdk
+build	Build debug APK	2026-08-20T23:45:21.4336455Z   ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+build	Build debug APK	2026-08-20T23:45:21.4336739Z ##[endgroup]
+build	Build debug APK	2026-08-20T23:45:24.6185740Z 
+build	Build debug APK	2026-08-20T23:45:24.6188210Z Welcome to Gradle 9.7.0!
+build	Build debug APK	2026-08-20T23:45:24.6188536Z 
+build	Build debug APK	2026-08-20T23:45:24.6188815Z Here are the highlights of this release:
+build	Build debug APK	2026-08-20T23:45:24.6197431Z  - Isolated Projects graduates to incubating
+build	Build debug APK	2026-08-20T23:45:24.6197950Z  - Broader Configuration Cache compatibility
+build	Build debug APK	2026-08-20T23:45:24.6198575Z  - More source locations in problem reports
+build	Build debug APK	2026-08-20T23:45:24.6198891Z 
+build	Build debug APK	2026-08-20T23:45:24.6199204Z For more details see https://docs.gradle.org/9.7.0/release-notes.html
+build	Build debug APK	2026-08-20T23:45:24.6199512Z 
+build	Build debug APK	2026-08-20T23:45:25.1178703Z To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+build	Build debug APK	2026-08-20T23:45:29.0178294Z Daemon will be stopped at the end of the build 
+build	Build debug APK	2026-08-20T23:46:32.8185643Z > Task :app:preBuild UP-TO-DATE
+build	Build debug APK	2026-08-20T23:46:32.8186587Z > Task :app:preDebugBuild UP-TO-DATE
+build	Build debug APK	2026-08-20T23:46:32.8187466Z > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+build	Build debug APK	2026-08-20T23:46:32.8188673Z > Task :app:checkKotlinGradlePluginConfigurationErrors
+build	Build debug APK	2026-08-20T23:46:38.1183412Z > Task :app:generateDebugResValues
+build	Build debug APK	2026-08-20T23:46:38.1208890Z > Task :app:checkDebugAarMetadata
+build	Build debug APK	2026-08-20T23:46:38.2199322Z > Task :app:mapDebugSourceSetPaths
+build	Build debug APK	2026-08-20T23:46:38.2200331Z > Task :app:generateDebugResources
+build	Build debug APK	2026-08-20T23:46:39.3174034Z > Task :app:packageDebugResources
+build	Build debug APK	2026-08-20T23:46:40.3173876Z > Task :app:mergeDebugResources
+build	Build debug APK	2026-08-20T23:46:40.8209629Z > Task :app:createDebugCompatibleScreenManifests
+build	Build debug APK	2026-08-20T23:46:40.8211179Z > Task :app:extractDeepLinksDebug
+build	Build debug APK	2026-08-20T23:46:40.9174357Z > Task :app:parseDebugLocalResources
+build	Build debug APK	2026-08-20T23:46:41.0173872Z > Task :app:processDebugMainManifest
+build	Build debug APK	2026-08-20T23:46:41.1196434Z > Task :app:processDebugManifest
+build	Build debug APK	2026-08-20T23:46:41.2189119Z > Task :app:javaPreCompileDebug
+build	Build debug APK	2026-08-20T23:46:41.2207685Z > Task :app:mergeDebugShaders
+build	Build debug APK	2026-08-20T23:46:41.2209442Z > Task :app:compileDebugShaders NO-SOURCE
+build	Build debug APK	2026-08-20T23:46:41.2218592Z > Task :app:generateDebugAssets UP-TO-DATE
+build	Build debug APK	2026-08-20T23:46:41.3175617Z > Task :app:mergeDebugAssets
+build	Build debug APK	2026-08-20T23:46:41.3176653Z > Task :app:processDebugManifestForPackage
+build	Build debug APK	2026-08-20T23:46:42.3199159Z > Task :app:compressDebugAssets
+build	Build debug APK	2026-08-20T23:46:42.3240288Z > Task :app:desugarDebugFileDependencies
+build	Build debug APK	2026-08-20T23:46:43.0199176Z > Task :app:mergeDebugStartupProfile
+build	Build debug APK	2026-08-20T23:46:43.0228867Z > Task :app:mergeDebugJniLibFolders
+build	Build debug APK	2026-08-20T23:46:43.0258905Z > Task :app:checkDebugDuplicateClasses
+build	Build debug APK	2026-08-20T23:46:43.3184502Z > Task :app:mergeDebugNativeLibs
+build	Build debug APK	2026-08-20T23:46:43.4180794Z > Task :app:processDebugResources
+build	Build debug APK	2026-08-20T23:47:10.7173934Z > Task :app:mergeExtDexDebug
+build	Build debug APK	2026-08-20T23:47:11.4199621Z > Task :app:mergeLibDexDebug
+build	Build debug APK	2026-08-20T23:47:11.6198666Z 
+build	Build debug APK	2026-08-20T23:47:11.6219019Z > Task :app:stripDebugDebugSymbols
+build	Build debug APK	2026-08-20T23:47:11.6249356Z Unable to strip the following libraries, packaging them as they are: libjingle_peerconnection_so.so.
+build	Build debug APK	2026-08-20T23:47:12.6188617Z 
+build	Build debug APK	2026-08-20T23:47:12.6217336Z > Task :app:validateSigningDebug
+build	Build debug APK	2026-08-20T23:47:12.6244238Z > Task :app:writeDebugAppMetadata
+build	Build debug APK	2026-08-20T23:47:12.6258919Z > Task :app:writeDebugSigningConfigVersions
+build	Build debug APK	2026-08-20T23:47:18.4173016Z 
+build	Build debug APK	2026-08-20T23:47:18.4174014Z > Task :app:compileDebugKotlin FAILED
+build	Build debug APK	2026-08-20T23:47:18.4250977Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/AirTalkApp.kt:30:30 Type mismatch: inferred type is WebRtcManager but SignalingListener? was expected
+build	Build debug APK	2026-08-20T23:47:18.4287518Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:36:5 Unresolved reference: SignalingListener
+build	Build debug APK	2026-08-20T23:47:18.4330838Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:92:46 Type mismatch: inferred type is ByteArray but ByteBuffer! was expected
+build	Build debug APK	2026-08-20T23:47:18.4360245Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:101:46 Type mismatch: inferred type is ByteArray but ByteBuffer! was expected
+build	Build debug APK	2026-08-20T23:47:18.4361927Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:119:5 'onSocketConnected' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4389849Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:127:5 'onSocketClosed' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4399931Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:137:5 'onUserStatus' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4402521Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:139:5 'onOnlineCount' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4405028Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:143:5 'onInit' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4407843Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:150:37 Type mismatch: inferred type is `<no name provided>` but SdpObserver! was expected
+build	Build debug APK	2026-08-20T23:47:18.4411264Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:150:61 Unresolved reference: SdpObserver
+build	Build debug APK	2026-08-20T23:47:18.4413857Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:151:13 'onCreateSuccess' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4416449Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:155:13 'onCreateFailure' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4419092Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:156:13 'onSetSuccess' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4421555Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:157:13 'onSetFailure' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4423984Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:161:5 'onRemoteSdp' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4426835Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:168:33 Type mismatch: inferred type is `<no name provided>` but SdpObserver! was expected
+build	Build debug APK	2026-08-20T23:47:18.4429811Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:168:57 Unresolved reference: SdpObserver
+build	Build debug APK	2026-08-20T23:47:18.4432306Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:169:13 'onCreateSuccess' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4435225Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:170:13 'onCreateFailure' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4437731Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:171:13 'onSetSuccess' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4441421Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:175:37 Type mismatch: inferred type is `<no name provided>` but SdpObserver! was expected
+build	Build debug APK	2026-08-20T23:47:18.4444447Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:175:61 Unresolved reference: SdpObserver
+build	Build debug APK	2026-08-20T23:47:18.4446894Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:176:25 'onCreateSuccess' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4450158Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:177:52 Type mismatch: inferred type is `<no name provided>` but SdpObserver! was expected
+build	Build debug APK	2026-08-20T23:47:18.4452725Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:177:76 Unresolved reference: SdpObserver
+build	Build debug APK	2026-08-20T23:47:18.4455191Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:178:33 'onCreateSuccess' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4457735Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:179:33 'onCreateFailure' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4460398Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:180:33 'onSetSuccess' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4462853Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:184:33 'onSetFailure' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4465328Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:187:25 'onCreateFailure' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4467865Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:188:25 'onSetSuccess' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4470519Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:189:25 'onSetFailure' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4472963Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:193:13 'onSetFailure' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4475582Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:197:5 'onRemoteCandidate' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4478286Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:201:5 'onRemoteHangUp' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4480859Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:208:5 'onCancelReconnection' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4483408Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:215:5 'onConfigUpdate' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4485880Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:217:5 'onKicked' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4488529Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:255:9 'onIceGatheringComplete' overrides nothing
+build	Build debug APK	2026-08-20T23:47:18.4491838Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:280:28 None of the following functions can be called with the arguments supplied: 
+build	Build debug APK	2026-08-20T23:47:18.4493908Z public inline fun String(stringBuffer: StringBuffer): String defined in kotlin.text
+build	Build debug APK	2026-08-20T23:47:18.4495250Z public inline fun String(stringBuilder: StringBuilder): String defined in kotlin.text
+build	Build debug APK	2026-08-20T23:47:18.4496392Z public inline fun String(bytes: ByteArray): String defined in kotlin.text
+build	Build debug APK	2026-08-20T23:47:18.4497650Z public inline fun String(chars: CharArray): String defined in kotlin.text
+build	Build debug APK	2026-08-20T23:47:18.4499824Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/rtc/WebRtcManager.kt:301:54 Type mismatch: inferred type is ByteArray but ByteBuffer! was expected
+build	Build debug APK	2026-08-20T23:47:18.4502373Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/ui/CallActivity.kt:49:36 Null can not be a value of a non-null type CallListener
+build	Build debug APK	2026-08-20T23:47:18.4504813Z e: file:///home/runner/work/airtalk-android/airtalk-android/app/src/main/java/com/airtalk/app/ui/MainActivity.kt:56:36 Null can not be a value of a non-null type CallListener
+build	Build debug APK	2026-08-20T23:47:18.5184359Z 
+build	Build debug APK	2026-08-20T23:47:18.5185679Z FAILURE: Build failed with an exception.
+build	Build debug APK	2026-08-20T23:47:18.5186134Z 
+build	Build debug APK	2026-08-20T23:47:18.5186987Z 
+build	Build debug APK	2026-08-20T23:47:18.5188345Z [Incubating] Problems report is available at: file:///home/runner/work/airtalk-android/airtalk-android/build/reports/problems/problems-report.html
+build	Build debug APK	2026-08-20T23:47:18.5232451Z * What went wrong:
+build	Build debug APK	2026-08-20T23:47:18.5232811Z 
+build	Build debug APK	2026-08-20T23:47:18.5233931Z Execution failed for task ':app:compileDebugKotlin' (registered by plugin 'org.jetbrains.kotlin.android').
+build	Build debug APK	2026-08-20T23:47:18.5236092Z > A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+build	Build debug APK	2026-08-20T23:47:18.5237890Z    > Compilation error. See log for more details
+build	Build debug APK	2026-08-20T23:47:18.5239062Z Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+build	Build debug APK	2026-08-20T23:47:18.5240260Z 
+build	Build debug APK	2026-08-20T23:47:18.5243207Z * Try:
+build	Build debug APK	2026-08-20T23:47:18.5296332Z > Run with --stacktrace option to get the stack trace.
+build	Build debug APK	2026-08-20T23:47:18.5297273Z > Run with --info or --debug option to get more log output.
+build	Build debug APK	2026-08-20T23:47:18.5298411Z > Run with --scan to get full insights from a Build Scan (powered by Develocity).
+build	Build debug APK	2026-08-20T23:47:18.5299252Z > Get more help at https://help.gradle.org.
+build	Build debug APK	2026-08-20T23:47:18.5299602Z 
+build	Build debug APK	2026-08-20T23:47:18.5299792Z BUILD FAILED in 1m 56s
+build	Build debug APK	2026-08-20T23:47:18.5300040Z 
+build	Build debug APK	2026-08-20T23:47:18.5301018Z You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+build	Build debug APK	2026-08-20T23:47:18.5301857Z 
+build	Build debug APK	2026-08-20T23:47:18.5302984Z For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+build	Build debug APK	2026-08-20T23:47:18.5304171Z 30 actionable tasks: 30 executed
+build	Build debug APK	2026-08-20T23:47:19.0001745Z ##[error]Process completed with exit code 1.

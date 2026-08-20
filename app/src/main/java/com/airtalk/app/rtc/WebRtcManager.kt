@@ -6,6 +6,9 @@ import android.os.Looper
 import com.airtalk.app.model.Messages
 import com.airtalk.app.model.TurnCredential
 import com.airtalk.app.net.SignalingClient
+import com.airtalk.app.net.SignalingListener
+import org.webrtc.SdpObserver
+import java.nio.ByteBuffer
 import org.webrtc.AudioSource
 import org.webrtc.AudioTrack
 import org.webrtc.DataChannel
@@ -32,7 +35,7 @@ enum class CallState { IDLE, SEARCHING, CONNECTING, CONNECTED }
 class WebRtcManager(
     private val context: Context,
     private val signaling: SignalingClient,
-    var listener: CallListener
+    var listener: CallListener?
 ) : SignalingListener {
 
     companion object {
@@ -89,7 +92,7 @@ class WebRtcManager(
 
     fun hangUp() {
         intentionalClose = true
-        dataChannel?.send(DataChannel.Buffer(MSG_HANG_UP.toByteArray(), false))
+        dataChannel?.send(DataChannel.Buffer(ByteBuffer.wrap(MSG_HANG_UP.toByteArray()), false))
         disposePeer()
         setState(CallState.IDLE)
         signaling.sendStatusUpdate("STALE")
@@ -98,7 +101,7 @@ class WebRtcManager(
     fun toggleMute(): Boolean {
         muted = !muted
         audioTrack?.setEnabled(!muted)
-        dataChannel?.send(DataChannel.Buffer((if (muted) MSG_MUTE_ON else MSG_MUTE_OFF).toByteArray(), false))
+        dataChannel?.send(DataChannel.Buffer(ByteBuffer.wrap((if (muted) MSG_MUTE_ON else MSG_MUTE_OFF).toByteArray()), false))
         return muted
     }
 
@@ -117,7 +120,7 @@ class WebRtcManager(
     // ---------- SignalingListener ----------
 
     override fun onSocketConnected() {
-        listener.onSocketStatus("connected")
+        listener?.onSocketStatus("connected")
         // if we were searching when the socket dropped, resume the search
         if (state == CallState.SEARCHING) {
             signaling.sendStatusUpdate("FREE")
@@ -125,19 +128,19 @@ class WebRtcManager(
     }
 
     override fun onSocketClosed(reason: String, retrying: Boolean) {
-        listener.onSocketStatus(if (retrying) "reconnecting…" else "disconnected")
+        listener?.onSocketStatus(if (retrying) "reconnecting…" else "disconnected")
         // connection lost while in a call: end it and go idle; re-queue via UI
         disposePeer()
         if (state == CallState.CONNECTING || state == CallState.CONNECTED) {
             setState(CallState.IDLE)
-            listener.onStateChanged(CallState.IDLE, "connection lost")
+            listener?.onStateChanged(CallState.IDLE, "connection lost")
         }
     }
 
     override fun onUserStatus(sessionId: String, clientId: String, acl: String, loggedIn: Boolean) {}
 
     override fun onOnlineCount(count: Int) {
-        listener.onOnlineCount(count)
+        listener?.onOnlineCount(count)
     }
 
     override fun onInit(turn: TurnCredential) {
@@ -147,7 +150,7 @@ class WebRtcManager(
         dataChannel = peerConnection?.createDataChannel(DC_LABEL, DataChannel.Init())
         setupDataChannel(dataChannel)
         addAudioTrack()
-        peerConnection?.createOffer(object : PeerConnection.SdpObserver {
+        peerConnection?.createOffer(object : SdpObserver {
             override fun onCreateSuccess(sdp: SessionDescription) {
                 signaling.send(Messages.sdp("OFFER", sdp))
                 setState(CallState.CONNECTING)
@@ -165,16 +168,16 @@ class WebRtcManager(
             turn?.let { createPeer(it) }
         }
         val pc = peerConnection ?: return
-        pc.setRemoteDescription(object : PeerConnection.SdpObserver {
+        pc.setRemoteDescription(object : SdpObserver {
             override fun onCreateSuccess(sdp: SessionDescription) {}
             override fun onCreateFailure(error: String) {}
             override fun onSetSuccess() {
                 if (sdp.type == SessionDescription.Type.OFFER) {
                     // we are the answerer
                     addAudioTrack()
-                    pc.createAnswer(object : PeerConnection.SdpObserver {
+                    pc.createAnswer(object : SdpObserver {
                         override fun onCreateSuccess(answer: SessionDescription) {
-                            pc.setLocalDescription(object : PeerConnection.SdpObserver {
+                            pc.setLocalDescription(object : SdpObserver {
                                 override fun onCreateSuccess(sdp: SessionDescription) {}
                                 override fun onCreateFailure(error: String) {}
                                 override fun onSetSuccess() {
@@ -201,7 +204,7 @@ class WebRtcManager(
     override fun onRemoteHangUp() {
         disposePeer()
         setState(CallState.IDLE)
-        listener.onRemoteHangUp()
+        listener?.onRemoteHangUp()
         signaling.sendStatusUpdate("STALE")
     }
 
@@ -215,7 +218,7 @@ class WebRtcManager(
     override fun onConfigUpdate(strict: Boolean) {}
 
     override fun onKicked() {
-        listener.onSocketStatus("re-authenticating…")
+        listener?.onSocketStatus("re-authenticating…")
         disposePeer()
         setState(CallState.IDLE)
     }
@@ -277,11 +280,14 @@ class WebRtcManager(
                 }
             }
             override fun onMessage(buffer: DataChannel.Buffer) {
-                val text = String(buffer.data)
+                val data = buffer.data
+                val bytes = ByteArray(data.remaining())
+                data.get(bytes)
+                val text = String(bytes, Charsets.UTF_8)
                 when (text) {
                     MSG_HANG_UP -> main.post { onRemoteHangUp() }
-                    MSG_MUTE_ON -> main.post { listener.onPeerMuted(true) }
-                    MSG_MUTE_OFF -> main.post { listener.onPeerMuted(false) }
+                    MSG_MUTE_ON -> main.post { listener?.onPeerMuted(true) }
+                    MSG_MUTE_OFF -> main.post { listener?.onPeerMuted(false) }
                 }
             }
         })
@@ -298,7 +304,7 @@ class WebRtcManager(
         stopKeepAlive()
         keepAlive = object : Runnable {
             override fun run() {
-                dataChannel?.send(DataChannel.Buffer(MSG_KEEPALIVE.toByteArray(), false))
+                dataChannel?.send(DataChannel.Buffer(ByteBuffer.wrap(MSG_KEEPALIVE.toByteArray()), false))
                 main.postDelayed(this, KEEPALIVE_MS)
             }
         }
@@ -342,6 +348,6 @@ class WebRtcManager(
     private fun setState(s: CallState) {
         if (state == s) return
         state = s
-        listener.onStateChanged(s)
+        listener?.onStateChanged(s)
     }
 }

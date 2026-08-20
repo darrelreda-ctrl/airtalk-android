@@ -1,0 +1,7 @@
+﻿gh : log not found: 96617951079
+At line:2 char:1
++ gh run view 32429447963 --log 2>&1 | Out-File -Encoding utf8 runlog.t ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (log not found: 96617951079:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
