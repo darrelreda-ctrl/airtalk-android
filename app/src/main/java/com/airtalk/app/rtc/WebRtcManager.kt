@@ -255,7 +255,6 @@ class WebRtcManager(
         }
         override fun onIceConnectionReceivingChange(receiving: Boolean) {}
         override fun onIceGatheringChange(state: PeerConnection.IceGatheringState) {}
-        override fun onIceGatheringComplete() {}
         override fun onSignalingChange(state: PeerConnection.SignalingState) {}
         override fun onDataChannel(channel: DataChannel) {
             if (channel.label() == DC_LABEL) {
