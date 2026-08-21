@@ -311,7 +311,7 @@ class WebRtcManager(
         }
         override fun onRemoveStream(stream: org.webrtc.MediaStream) {}
         override fun onAddTrack(receiver: org.webrtc.RtpReceiver, streams: Array<out org.webrtc.MediaStream>) {
-            val t = receiver.track
+            val t = receiver.track()
             if (t is org.webrtc.AudioTrack) {
                 DebugLog.append("RTC", "onAddTrack remote audio enabled")
                 t.setEnabled(true)
