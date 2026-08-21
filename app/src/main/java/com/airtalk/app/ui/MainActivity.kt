@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity(), CallListener {
 
         FilterStore.config = FilterConfig(
             preferredGender = gender,
-            strict = strictCheck.isChecked,
+            strict = if (strictCheck.isChecked) 3 else 1,
             allowCallback = callbackCheck.isChecked,
             interests = interests
         )

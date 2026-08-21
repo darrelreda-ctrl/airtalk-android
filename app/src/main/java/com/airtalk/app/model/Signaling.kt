@@ -26,7 +26,7 @@ data class FilterConfig(
     val nonPreferredCountries: List<String> = emptyList(),
     val interests: List<String> = emptyList(),
     val preferredGender: String = "ANY",
-    val strict: Boolean = false,
+    val strict: Int = 3,
     val allowCallback: Boolean = false
 )
 
