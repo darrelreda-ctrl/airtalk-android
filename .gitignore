@@ -7,3 +7,6 @@ local.properties
 # downloaded artifacts
 apk-out/
 
+r.json
+runid.txt
+

@@ -172,28 +172,29 @@ class WebRtcManager(
 
     override fun onRemoteSdp(remoteClientId: String, turn: TurnCredential?, country: String?, sdp: SessionDescription) {
         // Commit to the first match; ignore other simultaneous offers until this call ends.
-        DebugLog.append("RTC", "onRemoteSdp id=$remoteClientId locked=$matchLocked sigState=${peerConnection?.signalingState()}")
+        DebugLog.append("RTC", "onRemoteSdp id=$remoteClientId type=${sdp.type} locked=$matchLocked sigState=${peerConnection?.signalingState()}")
         if (matchLocked && remoteClientId != this.remoteClientId) return
-        if (!matchLocked) {
-            matchLocked = true
-            this.remoteClientId = remoteClientId
-            this.country = country
-            if (peerConnection == null) turn?.let { createPeer(it) }
-        }
-        val pc = peerConnection ?: return
-        val st = pc.signalingState()
-        if (st != PeerConnection.SignalingState.STABLE && st != PeerConnection.SignalingState.HAVE_REMOTE_OFFER) return
-        pc.setRemoteDescription(object : SdpObserver {
-            override fun onCreateSuccess(sdp: SessionDescription) {}
-            override fun onCreateFailure(error: String) { DebugLog.append("RTC", "SdpObserver onCreateFailure=$error") }
-            override fun onSetSuccess() {
-                if (sdp.type == SessionDescription.Type.OFFER) {
-                    // we are the answerer
+
+        if (sdp.type == SessionDescription.Type.OFFER) {
+            // We are the answerer: lock, set remote offer, then answer.
+            if (!matchLocked) {
+                matchLocked = true
+                this.remoteClientId = remoteClientId
+                this.country = country
+                if (peerConnection == null) turn?.let { createPeer(it) }
+            }
+            val pc = peerConnection ?: return
+            val st = pc.signalingState()
+            if (st != PeerConnection.SignalingState.STABLE && st != PeerConnection.SignalingState.HAVE_REMOTE_OFFER) return
+            pc.setRemoteDescription(object : SdpObserver {
+                override fun onCreateSuccess(s: SessionDescription) {}
+                override fun onCreateFailure(error: String) { DebugLog.append("RTC", "SdpObserver onCreateFailure=$error") }
+                override fun onSetSuccess() {
                     addAudioTrack()
                     pc.createAnswer(object : SdpObserver {
                         override fun onCreateSuccess(answer: SessionDescription) {
                             pc.setLocalDescription(object : SdpObserver {
-                                override fun onCreateSuccess(sdp: SessionDescription) {}
+                                override fun onCreateSuccess(s: SessionDescription) {}
                                 override fun onCreateFailure(error: String) { DebugLog.append("RTC", "SdpObserver onCreateFailure=$error") }
                                 override fun onSetSuccess() {
                                     DebugLog.append("RTC", "send ANSWER to $remoteClientId")
@@ -208,9 +209,22 @@ class WebRtcManager(
                         override fun onSetFailure(error: String) { DebugLog.append("RTC", "SdpObserver onSetFailure=$error") }
                     }, mediaConstraints())
                 }
-            }
-            override fun onSetFailure(error: String) { DebugLog.append("RTC", "SdpObserver onSetFailure=$error") }
-        }, sdp)
+                override fun onSetFailure(error: String) { DebugLog.append("RTC", "SdpObserver onSetFailure=$error") }
+            }, sdp)
+        } else {
+            // We are the offerer and this is the answer to our offer.
+            val pc = peerConnection ?: return
+            if (pc.signalingState() != PeerConnection.SignalingState.HAVE_LOCAL_OFFER) return
+            this.remoteClientId = remoteClientId
+            pc.setRemoteDescription(object : SdpObserver {
+                override fun onCreateSuccess(s: SessionDescription) {}
+                override fun onCreateFailure(error: String) { DebugLog.append("RTC", "SdpObserver onCreateFailure=$error") }
+                override fun onSetSuccess() {
+                    DebugLog.append("RTC", "remote ANSWER applied id=$remoteClientId")
+                }
+                override fun onSetFailure(error: String) { DebugLog.append("RTC", "SdpObserver onSetFailure=$error") }
+            }, sdp)
+        }
     }
 
     override fun onRemoteCandidate(candidate: IceCandidate) {
@@ -259,10 +273,12 @@ class WebRtcManager(
 
     private val pcObserver = object : PeerConnection.Observer {
         override fun onIceCandidate(candidate: IceCandidate) {
+            DebugLog.append("RTC", "ICE candidate send mid=${candidate.sdpMid} mline=${candidate.sdpMLineIndex}")
             signaling.send(Messages.candidate(candidate))
         }
         override fun onIceCandidatesRemoved(candidates: Array<out IceCandidate>) {}
         override fun onIceConnectionChange(state: PeerConnection.IceConnectionState) {
+            DebugLog.append("RTC", "ICE state=$state")
             when (state) {
                 PeerConnection.IceConnectionState.CONNECTED -> onPeerConnected()
                 PeerConnection.IceConnectionState.DISCONNECTED -> Unit // transient
