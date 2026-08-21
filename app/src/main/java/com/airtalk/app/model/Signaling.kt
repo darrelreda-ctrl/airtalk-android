@@ -1,5 +1,6 @@
 package com.airtalk.app.model
 
+import org.json.JSONArray
 import org.json.JSONObject
 
 object MsgType {
@@ -38,11 +39,11 @@ object Messages {
     fun filterUpdate(c: FilterConfig): String =
         JSONObject()
             .put("messageType", MsgType.FILTER_UPDATE)
-            .put("preferredCountries", c.preferredCountries)
-            .put("nonPreferredCountries", c.nonPreferredCountries)
-            .put("interests", c.interests)
+            .put("preferredCountries", JSONArray(c.preferredCountries))
+            .put("nonPreferredCountries", JSONArray(c.nonPreferredCountries))
+            .put("interests", JSONArray(c.interests))
             .put("preferredGender", c.preferredGender)
-            .put("strict", if (c.strict) 1 else 0)
+            .put("strict", c.strict)
             .put("allowCallback", c.allowCallback)
             .toString()
 
