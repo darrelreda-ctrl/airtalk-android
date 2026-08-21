@@ -6,6 +6,7 @@ import com.airtalk.app.model.FilterConfig
 import com.airtalk.app.net.SignalingClient
 import com.airtalk.app.rtc.CallListener
 import com.airtalk.app.rtc.WebRtcManager
+import com.airtalk.app.util.DebugLog
 
 object FilterStore {
     @Volatile
@@ -22,6 +23,7 @@ class AirTalkApp : Application() {
     override fun onCreate() {
         super.onCreate()
         TokenManager.init(this)
+        DebugLog.init(this)
         signaling = SignalingClient(
             tokenProvider = { TokenManager.getToken() },
             filterProvider = { FilterStore.config }

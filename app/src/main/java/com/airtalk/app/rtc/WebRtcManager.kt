@@ -17,6 +17,7 @@ import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.SessionDescription
+import com.airtalk.app.util.DebugLog
 
 interface CallListener {
     fun onStateChanged(state: CallState, extra: String = "") {}
@@ -85,6 +86,7 @@ class WebRtcManager(
     fun startSearching() {
         if (state == CallState.SEARCHING || state == CallState.CONNECTING) return
         if (state == CallState.CONNECTED) { hangUp(); return }
+        DebugLog.append("RTC", "startSearching state=$state")
         intentionalClose = false
         matchLocked = false
         remoteClientId = ""
@@ -131,6 +133,7 @@ class WebRtcManager(
     }
 
     override fun onSocketClosed(reason: String, retrying: Boolean) {
+        DebugLog.append("RTC", "socketClosed reason=$reason retry=$retrying")
         listener?.onSocketStatus(if (retrying) "reconnecting…" else "disconnected")
         // connection lost while in a call: end it and go idle; re-queue via UI
         disposePeer()
@@ -150,6 +153,7 @@ class WebRtcManager(
 
     override fun onInit(turn: TurnCredential) {
         // we are the offerer
+        DebugLog.append("RTC", "onInit")
         remoteClientId = ""
         createPeer(turn)
         dataChannel = peerConnection?.createDataChannel(DC_LABEL, DataChannel.Init())
@@ -160,14 +164,15 @@ class WebRtcManager(
                 signaling.send(Messages.sdp("OFFER", sdp))
                 setState(CallState.CONNECTING)
             }
-            override fun onCreateFailure(error: String) {}
+            override fun onCreateFailure(error: String) { DebugLog.append("RTC", "SdpObserver onCreateFailure=$error") }
             override fun onSetSuccess() {}
-            override fun onSetFailure(error: String) {}
+            override fun onSetFailure(error: String) { DebugLog.append("RTC", "SdpObserver onSetFailure=$error") }
         }, mediaConstraints())
     }
 
     override fun onRemoteSdp(remoteClientId: String, turn: TurnCredential?, country: String?, sdp: SessionDescription) {
         // Commit to the first match; ignore other simultaneous offers until this call ends.
+        DebugLog.append("RTC", "onRemoteSdp id=$remoteClientId locked=$matchLocked sigState=${peerConnection?.signalingState()}")
         if (matchLocked && remoteClientId != this.remoteClientId) return
         if (!matchLocked) {
             matchLocked = true
@@ -180,7 +185,7 @@ class WebRtcManager(
         if (st != PeerConnection.SignalingState.STABLE && st != PeerConnection.SignalingState.HAVE_REMOTE_OFFER) return
         pc.setRemoteDescription(object : SdpObserver {
             override fun onCreateSuccess(sdp: SessionDescription) {}
-            override fun onCreateFailure(error: String) {}
+            override fun onCreateFailure(error: String) { DebugLog.append("RTC", "SdpObserver onCreateFailure=$error") }
             override fun onSetSuccess() {
                 if (sdp.type == SessionDescription.Type.OFFER) {
                     // we are the answerer
@@ -189,21 +194,22 @@ class WebRtcManager(
                         override fun onCreateSuccess(answer: SessionDescription) {
                             pc.setLocalDescription(object : SdpObserver {
                                 override fun onCreateSuccess(sdp: SessionDescription) {}
-                                override fun onCreateFailure(error: String) {}
+                                override fun onCreateFailure(error: String) { DebugLog.append("RTC", "SdpObserver onCreateFailure=$error") }
                                 override fun onSetSuccess() {
+                                    DebugLog.append("RTC", "send ANSWER to $remoteClientId")
                                     signaling.send(Messages.sdp("ANSWER", answer))
                                     setState(CallState.CONNECTING)
                                 }
-                                override fun onSetFailure(error: String) {}
+                                override fun onSetFailure(error: String) { DebugLog.append("RTC", "SdpObserver onSetFailure=$error") }
                             }, answer)
                         }
-                        override fun onCreateFailure(error: String) {}
+                        override fun onCreateFailure(error: String) { DebugLog.append("RTC", "SdpObserver onCreateFailure=$error") }
                         override fun onSetSuccess() {}
-                        override fun onSetFailure(error: String) {}
+                        override fun onSetFailure(error: String) { DebugLog.append("RTC", "SdpObserver onSetFailure=$error") }
                     }, mediaConstraints())
                 }
             }
-            override fun onSetFailure(error: String) {}
+            override fun onSetFailure(error: String) { DebugLog.append("RTC", "SdpObserver onSetFailure=$error") }
         }, sdp)
     }
 
@@ -212,6 +218,7 @@ class WebRtcManager(
     }
 
     override fun onRemoteHangUp() {
+        DebugLog.append("RTC", "remoteHangUp")
         disposePeer()
         matchLocked = false
         setState(CallState.IDLE)
@@ -240,6 +247,7 @@ class WebRtcManager(
 
     private fun createPeer(turn: TurnCredential?) {
         disposePeer()
+        DebugLog.append("RTC", "createPeer hasTurn=${turn != null}")
         val servers = STUN.map { PeerConnection.IceServer.builder(it).createIceServer() }.toMutableList()
         if (turn != null) {
             servers.add(PeerConnection.IceServer.builder(TURN_URL).setUsername(turn.username).setPassword(turn.password).createIceServer())
@@ -307,6 +315,7 @@ class WebRtcManager(
 
     private fun onPeerConnected() {
         if (state == CallState.CONNECTED) return
+        DebugLog.append("RTC", "peerConnected id=$remoteClientId")
         setState(CallState.CONNECTED)
         signaling.send(Messages.established(remoteClientId))
         startKeepAlive()
@@ -360,6 +369,7 @@ class WebRtcManager(
     private fun setState(s: CallState) {
         if (state == s) return
         state = s
+        DebugLog.append("RTC", "setState ${s}")
         listener?.onStateChanged(s)
     }
 }

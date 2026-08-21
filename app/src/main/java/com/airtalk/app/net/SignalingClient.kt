@@ -6,6 +6,7 @@ import com.airtalk.app.auth.TokenManager
 import com.airtalk.app.model.FilterConfig
 import com.airtalk.app.model.Messages
 import com.airtalk.app.model.TurnCredential
+import com.airtalk.app.util.DebugLog
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -92,7 +93,9 @@ class SignalingClient(
     @Synchronized
     fun send(text: String): Boolean {
         val ws = socket
-        return ws != null && ws.send(text)
+        val ok = ws != null && ws.send(text)
+        DebugLog.append("WS", "SEND ok=$ok ${text.take(160)}")
+        return ok
     }
 
     fun sendFilterUpdate() = send(Messages.filterUpdate(filterProvider()))
@@ -102,6 +105,7 @@ class SignalingClient(
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
         reconnectAttempts = 0
+        DebugLog.append("WS", "OPEN")
         main.post {
             sendFilterUpdate()
             listener?.onSocketConnected()
@@ -119,11 +123,9 @@ class SignalingClient(
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         main.post {
             if (webSocket === socket) socket = null
+            val retry = code != 3401 && code != 3403
+            DebugLog.append("WS", "CLOSE code=$code reason='$reason' retry=$retry")
             if (!intentionalClose) {
-                // 3401/3403 = auth failure (bad/expired token): do not retry.
-                // 1003 "Duplicate session" and other closures are transient: retry
-                // after a gap so the server can release the previous session.
-                val retry = code != 3401 && code != 3403
                 listener?.onSocketClosed("closed:$code", retry)
                 scheduleReconnect()
             }
@@ -133,6 +135,7 @@ class SignalingClient(
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         main.post {
             if (webSocket === socket) socket = null
+            DebugLog.append("WS", "FAILURE ${t.message}")
             if (!intentionalClose) {
                 listener?.onSocketClosed(t.message ?: "failure", true)
                 scheduleReconnect()
@@ -160,8 +163,10 @@ class SignalingClient(
 
     private fun handleMessage(raw: String) {
         try {
+        DebugLog.append("MSG", "RECV ${raw.take(200)}")
         if (raw == "PING") {
             send("PONG")
+            DebugLog.append("MSG", "PING -> sent PONG")
             return
         }
         val msg = try { JSONObject(raw) } catch (e: Exception) { return }
@@ -206,7 +211,7 @@ class SignalingClient(
             // v1 ignores: TEXT_CHAT, FRIEND*, CALL_RESPONSE, USER_QUERY_RESPONSE, AUTH, ONLINE_MEMBERS extras
         }
         } catch (e: Exception) {
-            // never let a malformed frame crash the socket thread
+            DebugLog.append("MSG", "DISPATCH EXCEPTION ${e.message}\n${e.stackTraceToString()}")
         }
     }
 

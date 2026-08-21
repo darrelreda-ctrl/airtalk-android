@@ -19,6 +19,7 @@ import com.airtalk.app.R
 import com.airtalk.app.model.FilterConfig
 import com.airtalk.app.rtc.CallListener
 import com.airtalk.app.rtc.CallState
+import com.airtalk.app.ui.DebugActivity
 
 class MainActivity : AppCompatActivity(), CallListener {
 
@@ -41,6 +42,10 @@ class MainActivity : AppCompatActivity(), CallListener {
 
         startButton.setOnClickListener {
             if (checkMicPermission()) startCall()
+        }
+
+        findViewById<Button>(R.id.debugButton).setOnClickListener {
+            startActivity(Intent(this, DebugActivity::class.java))
         }
     }
 
