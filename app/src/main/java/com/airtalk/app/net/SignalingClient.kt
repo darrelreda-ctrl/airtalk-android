@@ -45,7 +45,6 @@ class SignalingClient(
     private val http = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(0, TimeUnit.MILLISECONDS)
-        .pingInterval(20, TimeUnit.SECONDS)
         .build()
 
     private val main = Handler(Looper.getMainLooper())
@@ -149,6 +148,7 @@ class SignalingClient(
     // ---------- protocol ----------
 
     private fun handleMessage(raw: String) {
+        try {
         if (raw == "PING") {
             send("PONG")
             return
@@ -193,6 +193,9 @@ class SignalingClient(
                 if (id.isNotBlank()) send(Messages.callResponse(id, "DECLINED"))
             }
             // v1 ignores: TEXT_CHAT, FRIEND*, CALL_RESPONSE, USER_QUERY_RESPONSE, AUTH, ONLINE_MEMBERS extras
+        }
+        } catch (e: Exception) {
+            // never let a malformed frame crash the socket thread
         }
     }
 

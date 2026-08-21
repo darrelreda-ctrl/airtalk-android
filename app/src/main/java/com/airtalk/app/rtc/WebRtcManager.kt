@@ -68,6 +68,7 @@ class WebRtcManager(
         private set
     private var muted = false
     private var intentionalClose = false
+    private var matchLocked = false
 
     fun initialize() {
         val options = PeerConnectionFactory.InitializationOptions.builder(context)
@@ -85,6 +86,8 @@ class WebRtcManager(
         if (state == CallState.SEARCHING || state == CallState.CONNECTING) return
         if (state == CallState.CONNECTED) { hangUp(); return }
         intentionalClose = false
+        matchLocked = false
+        remoteClientId = ""
         initAudio()
         setState(CallState.SEARCHING)
         signaling.sendStatusUpdate("FREE")
@@ -131,6 +134,8 @@ class WebRtcManager(
         listener?.onSocketStatus(if (retrying) "reconnecting…" else "disconnected")
         // connection lost while in a call: end it and go idle; re-queue via UI
         disposePeer()
+        matchLocked = false
+        remoteClientId = ""
         if (state == CallState.CONNECTING || state == CallState.CONNECTED) {
             setState(CallState.IDLE)
             listener?.onStateChanged(CallState.IDLE, "connection lost")
@@ -162,12 +167,17 @@ class WebRtcManager(
     }
 
     override fun onRemoteSdp(remoteClientId: String, turn: TurnCredential?, country: String?, sdp: SessionDescription) {
-        this.remoteClientId = remoteClientId
-        this.country = country
-        if (peerConnection == null) {
-            turn?.let { createPeer(it) }
+        // Commit to the first match; ignore other simultaneous offers until this call ends.
+        if (matchLocked && remoteClientId != this.remoteClientId) return
+        if (!matchLocked) {
+            matchLocked = true
+            this.remoteClientId = remoteClientId
+            this.country = country
+            if (peerConnection == null) turn?.let { createPeer(it) }
         }
         val pc = peerConnection ?: return
+        val st = pc.signalingState()
+        if (st != PeerConnection.SignalingState.STABLE && st != PeerConnection.SignalingState.HAVE_REMOTE_OFFER) return
         pc.setRemoteDescription(object : SdpObserver {
             override fun onCreateSuccess(sdp: SessionDescription) {}
             override fun onCreateFailure(error: String) {}
@@ -203,6 +213,7 @@ class WebRtcManager(
 
     override fun onRemoteHangUp() {
         disposePeer()
+        matchLocked = false
         setState(CallState.IDLE)
         listener?.onRemoteHangUp()
         signaling.sendStatusUpdate("STALE")
@@ -211,6 +222,7 @@ class WebRtcManager(
     override fun onCancelReconnection(clientId: String) {
         if (clientId.isNotBlank() && clientId == remoteClientId) {
             disposePeer()
+            matchLocked = false
             setState(CallState.IDLE)
         }
     }
@@ -220,6 +232,7 @@ class WebRtcManager(
     override fun onKicked() {
         listener?.onSocketStatus("re-authenticating…")
         disposePeer()
+        matchLocked = false
         setState(CallState.IDLE)
     }
 
