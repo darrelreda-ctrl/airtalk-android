@@ -84,9 +84,13 @@ class WebRtcManager(
     // ---------- public controls ----------
 
     fun startSearching() {
+        DebugLog.append("RTC", "startSearching enter state=$state")
         if (state == CallState.SEARCHING || state == CallState.CONNECTING) return
-        if (state == CallState.CONNECTED) { hangUp(); return }
-        DebugLog.append("RTC", "startSearching state=$state")
+        if (state == CallState.CONNECTED) {
+            DebugLog.append("RTC", "startSearching ignored: already CONNECTED")
+            return
+        }
+        DebugLog.append("RTC", "startSearching -> SEARCHING, sending FREE")
         intentionalClose = false
         matchLocked = false
         remoteClientId = ""
@@ -96,6 +100,7 @@ class WebRtcManager(
     }
 
     fun hangUp() {
+        DebugLog.append("RTC", "hangUp called state=$state")
         intentionalClose = true
         dataChannel?.send(DataChannel.Buffer(ByteBuffer.wrap(MSG_HANG_UP.toByteArray()), false))
         disposePeer()
@@ -300,9 +305,18 @@ class WebRtcManager(
             }
         }
         override fun onRenegotiationNeeded() {}
-        override fun onAddStream(stream: org.webrtc.MediaStream) {}
+        override fun onAddStream(stream: org.webrtc.MediaStream) {
+            DebugLog.append("RTC", "onAddStream tracks=${stream.audioTracks.size} video=${stream.videoTracks.size}")
+            stream.audioTracks.firstOrNull()?.setEnabled(true)
+        }
         override fun onRemoveStream(stream: org.webrtc.MediaStream) {}
-        override fun onAddTrack(receiver: org.webrtc.RtpReceiver, streams: Array<out org.webrtc.MediaStream>) {}
+        override fun onAddTrack(receiver: org.webrtc.RtpReceiver, streams: Array<out org.webrtc.MediaStream>) {
+            val t = receiver.track
+            if (t is org.webrtc.AudioTrack) {
+                DebugLog.append("RTC", "onAddTrack remote audio enabled")
+                t.setEnabled(true)
+            }
+        }
         override fun onRemoveTrack(receiver: org.webrtc.RtpReceiver) {}
     }
 
