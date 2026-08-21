@@ -51,10 +51,6 @@ class SignalingClient(
     private var socket: WebSocket? = null
     private var intentionalClose = false
     private var reconnectAttempts = 0
-    private val reconnectRunnable = Runnable {
-        reconnectScheduled = false
-        connectInternal()
-    }
     private var reconnectScheduled = false
 
     private val UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
@@ -68,6 +64,8 @@ class SignalingClient(
     }
 
     private fun connectInternal() {
+        // Guarantee a single live socket: close any previous one first.
+        socket?.let { s -> try { s.close(1000, "replacing") } catch (e: Exception) {} }
         try {
             val url = "wss://api.airtalk.live/signaling?token=" + java.net.URLEncoder.encode(tokenProvider(), "UTF-8")
             val request = Request.Builder()
@@ -85,10 +83,10 @@ class SignalingClient(
     @Synchronized
     fun disconnect() {
         intentionalClose = true
+        reconnectScheduled = false
+        main.removeCallbacks(reconnectRunnable)
         socket?.close(1000, "bye")
         socket = null
-        main.removeCallbacks(reconnectRunnable)
-        reconnectScheduled = false
     }
 
     @Synchronized
@@ -120,8 +118,12 @@ class SignalingClient(
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
         main.post {
+            if (webSocket === socket) socket = null
             if (!intentionalClose) {
-                val retry = code != 3401 && code != 3403 && code != 1003
+                // 3401/3403 = auth failure (bad/expired token): do not retry.
+                // 1003 "Duplicate session" and other closures are transient: retry
+                // after a gap so the server can release the previous session.
+                val retry = code != 3401 && code != 3403
                 listener?.onSocketClosed("closed:$code", retry)
                 scheduleReconnect()
             }
@@ -130,6 +132,7 @@ class SignalingClient(
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         main.post {
+            if (webSocket === socket) socket = null
             if (!intentionalClose) {
                 listener?.onSocketClosed(t.message ?: "failure", true)
                 scheduleReconnect()
@@ -137,10 +140,18 @@ class SignalingClient(
         }
     }
 
+    private val reconnectRunnable = Runnable {
+        reconnectScheduled = false
+        // Tear down any dangling socket, then wait a beat so the server releases
+        // the prior session before we open a new one (avoids "Duplicate session").
+        socket?.let { s -> try { s.close(1000, "replacing") } catch (e: Exception) {} }
+        main.postDelayed({ connectInternal() }, 1500)
+    }
+
     private fun scheduleReconnect() {
         if (intentionalClose || reconnectScheduled) return
         reconnectScheduled = true
-        val delay = minOf(1000L * (1 shl minOf(reconnectAttempts, 4)), 10000L)
+        val delay = minOf(2000L * (1 shl minOf(reconnectAttempts, 3)), 15000L)
         reconnectAttempts++
         main.postDelayed(reconnectRunnable, delay)
     }
